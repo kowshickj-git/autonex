@@ -1,20 +1,14 @@
-"use client";
-
 import Link from "next/link";
-import { useState } from "react";
 import { company } from "@/lib/site";
-
-/** Where the real brand file lives. Drop the artwork here and it appears. */
-export const LOGO_SRC = "/logo.png";
 
 /**
  * Square icon mark, for slots too small for the full horizontal lockup -
  * the admin sidebar, the 404 page, the dark footer. Built from two structural
  * strokes and a copper signal node.
  *
- * Kept as SVG rather than the brand PNG on purpose: the real logo is a wide
- * lockup with dark-blue wordmark, which neither fits a square nor reads on a
- * navy background.
+ * Kept as SVG rather than the brand artwork on purpose: the real logo is a
+ * wide lockup with a dark-blue wordmark, which neither fits a square nor
+ * reads on a navy background.
  */
 export function LogoMark({ className = "size-9" }: { className?: string }) {
   return (
@@ -42,15 +36,15 @@ export function LogoMark({ className = "size-9" }: { className?: string }) {
   );
 }
 
-/** The placeholder lockup, shown until the brand file is in place. */
+/** Typeset lockup, used whenever no brand file has been supplied. */
 function FallbackLockup({ invert, compact }: { invert: boolean; compact: boolean }) {
   return (
     <>
-      <LogoMark className={compact ? "size-8" : "size-9"} />
+      <LogoMark className={compact ? "size-8" : "size-10"} />
       <span className="flex flex-col leading-none">
         <span
           className={`font-display font-extrabold tracking-tight ${
-            compact ? "text-[15px]" : "text-base"
+            compact ? "text-[15px]" : "text-[17px]"
           } ${invert ? "text-white" : "text-navy-900"}`}
         >
           AUTONEX
@@ -66,42 +60,45 @@ function FallbackLockup({ invert, compact }: { invert: boolean; compact: boolean
 /**
  * Full brand lockup for the site header.
  *
- * Rendered as a plain <img> rather than next/image deliberately: the artwork
- * is supplied by the owner, so its exact pixel dimensions are unknown here.
- * next/image needs a declared width/height, and a declared ratio that did not
- * match the real file would visibly stretch the logo. The browser reads the
- * true aspect from the file itself, so `h-* w-auto` is always correct.
+ * `src` is resolved on the SERVER by resolveBrandLogo(), so this component
+ * never has to guess whether the artwork exists. When it is null the
+ * placeholder renders instead and the browser is never handed a URL that
+ * 404s - which is what previously left broken alt text sitting in the header.
+ * An onError fallback could not fix that, because the image fails during the
+ * first paint, before React has hydrated and attached the handler.
  *
- * If the file is missing the component falls back to the placeholder lockup,
- * so the header never shows a broken image.
+ * Rendered as a plain <img> rather than next/image deliberately: the artwork
+ * is supplied by the owner, so its pixel dimensions are unknown at build
+ * time. next/image requires a declared width/height, and a declared ratio
+ * that did not match the real file would visibly stretch the logo. The
+ * browser reads the true aspect from the file, so `h-* w-auto` is always right.
  */
 export function Logo({
+  src = null,
   invert = false,
   compact = false,
 }: {
+  src?: string | null;
   invert?: boolean;
   compact?: boolean;
 }) {
-  const [failed, setFailed] = useState(false);
-
   return (
     <Link
       href="/"
       className="group flex items-center gap-2.5"
       aria-label={`${company.name} - home`}
     >
-      {failed ? (
-        <FallbackLockup invert={invert} compact={compact} />
-      ) : (
+      {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={LOGO_SRC}
+          src={src}
           alt={`${company.name} - automation, engineering, innovation`}
-          onError={() => setFailed(true)}
           className={`w-auto transition-[height] duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             compact ? "h-9" : "h-12"
           }`}
         />
+      ) : (
+        <FallbackLockup invert={invert} compact={compact} />
       )}
     </Link>
   );

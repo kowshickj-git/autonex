@@ -113,7 +113,7 @@ function NavDropdown({ item, active }: { item: NavItem; active: boolean }) {
 /* ------------------------------------------------------------------ *
  * Navbar
  * ------------------------------------------------------------------ */
-export function Navbar() {
+export function Navbar({ logoSrc = null }: { logoSrc?: string | null }) {
   const pathname = usePathname();
   const reduced = usePrefersReducedMotion();
   const { scrollY } = useScroll();
@@ -186,7 +186,7 @@ export function Navbar() {
             transition={{ duration: 0.5, ease: EASE.outQuint, delay: LOAD_DELAY.logo }}
             className="shrink-0"
           >
-            <Logo compact={condensed} />
+            <Logo src={logoSrc} compact={condensed} />
           </motion.div>
 
           {/* Open space to the right of the logo */}

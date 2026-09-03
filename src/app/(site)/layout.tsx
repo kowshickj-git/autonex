@@ -7,6 +7,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { company, addressOneLine, siteUrl } from "@/lib/site";
+import { resolveBrandLogo } from "@/lib/brandLogo";
 
 /**
  * Structured data so search engines read the business correctly.
@@ -33,6 +34,9 @@ const localBusinessSchema = {
 };
 
 export default function SiteLayout({ children }: { children: ReactNode }) {
+  // Resolved on the server so a missing file never reaches the browser.
+  const logoSrc = resolveBrandLogo();
+
   return (
     <>
       <script
@@ -51,7 +55,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
         Skip to content
       </a>
 
-      <Navbar />
+      <Navbar logoSrc={logoSrc} />
 
       {/* Spacer matching the fixed header: 80px, +38px contact strip from lg. */}
       <div aria-hidden="true" className="h-20 lg:h-[118px]" />
