@@ -174,26 +174,19 @@ export function Navbar({ logoSrc = null }: { logoSrc?: string | null }) {
         }`}
       >
         {/*
-          Header layout: logo hard left, then open space, the services
-          navigation centred, more open space, and the actions hard right.
-          The two flex-1 spacers are what centre the nav and give the logo
-          room to breathe rather than being crowded by the menu.
+          Header layout: services navigation on the left, open space, the
+          actions, and the logo in the top-right corner.
+
+          `min-w-0` on the nav lets it shrink rather than forcing the row
+          wider than the viewport - without it the right-hand items were
+          being pushed off the edge and clipped.
         */}
         <div className="container-page flex h-full items-center gap-4">
-          <motion.div
-            initial={reduced ? false : { opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: EASE.outQuint, delay: LOAD_DELAY.logo }}
-            className="shrink-0"
+          {/* Services navigation, left */}
+          <nav
+            className="hidden min-w-0 items-center gap-6 xl:flex"
+            aria-label="Main"
           >
-            <Logo src={logoSrc} compact={condensed} />
-          </motion.div>
-
-          {/* Open space to the right of the logo */}
-          <div className="hidden flex-1 xl:block" aria-hidden="true" />
-
-          {/* Services navigation, centred in the header */}
-          <nav className="hidden items-center gap-6 xl:flex" aria-label="Main">
             {navigation.map((item) =>
               item.children ? (
                 <NavDropdown key={item.href} item={item} active={isActive(item)} />
@@ -202,7 +195,7 @@ export function Navbar({ logoSrc = null }: { logoSrc?: string | null }) {
                   key={item.href}
                   href={item.href}
                   data-active={isActive(item)}
-                  className="nav-link py-2 text-sm font-semibold text-navy-800 hover:text-navy-950"
+                  className="nav-link whitespace-nowrap py-2 text-sm font-semibold text-navy-800 hover:text-navy-950"
                 >
                   {item.label}
                 </Link>
@@ -210,21 +203,14 @@ export function Navbar({ logoSrc = null }: { logoSrc?: string | null }) {
             )}
           </nav>
 
-          {/* Balancing space so the nav sits centred, not pushed right */}
-          <div className="hidden flex-1 xl:block" aria-hidden="true" />
-
-          {/* Below xl the nav is a drawer, so this keeps actions on the right */}
-          <div className="flex-1 xl:hidden" aria-hidden="true" />
+          {/* Open space between the menu and the right-hand corner */}
+          <div className="flex-1" aria-hidden="true" />
 
           <div className="flex shrink-0 items-center gap-3">
-            <a
-              href={`tel:${company.phonesIntl[0]}`}
-              className="btn btn-outline hidden !px-4 !py-2.5 text-[13px] lg:inline-flex xl:hidden"
+            <Link
+              href="/contact"
+              className="btn btn-primary hidden !py-3 text-[13px] lg:inline-flex"
             >
-              <Phone className="size-4" strokeWidth={2} />
-              Call
-            </a>
-            <Link href="/contact" className="btn btn-primary hidden !py-3 text-[13px] sm:inline-flex">
               Get a Quote
             </Link>
 
@@ -238,6 +224,16 @@ export function Navbar({ logoSrc = null }: { logoSrc?: string | null }) {
               {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
             </button>
           </div>
+
+          {/* Logo - top-right corner, last element in the row */}
+          <motion.div
+            initial={reduced ? false : { opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: EASE.outQuint, delay: LOAD_DELAY.logo }}
+            className="shrink-0"
+          >
+            <Logo src={logoSrc} compact={condensed} />
+          </motion.div>
         </div>
       </div>
 
